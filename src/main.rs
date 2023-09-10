@@ -4,15 +4,15 @@
 #![no_std]
 #![no_main]
 
-use bsp::entry;
+use bsp::{entry, hal::pio::PinState};
 use defmt::*;
 use defmt_rtt as _;
-use embedded_hal::digital::v2::OutputPin;
+use embedded_hal::digital::v2::{OutputPin, ToggleableOutputPin};
 use panic_probe as _;
 
 // Provide an alias for our BSP so we can switch targets quickly.
 // Uncomment the BSP you included in Cargo.toml, the rest of the code does not need to change.
-use rp_pico as bsp;
+use hatlet_0_1_0 as bsp;
 // use sparkfun_pro_micro_rp2040 as bsp;
 
 use bsp::hal::{
@@ -58,15 +58,39 @@ fn main() -> ! {
     // Notably, on the Pico W, the LED is not connected to any of the RP2040 GPIOs but to the cyw43 module instead. If you have
     // a Pico W and want to toggle a LED with a simple GPIO output pin, you can connect an external
     // LED to one of the GPIO pins, and reference that pin here.
-    let mut led_pin = pins.led.into_push_pull_output();
+    // let mut led_pin = pins.led.into_push_pull_output();
+    let mut led0_pin = pins.led0.into_push_pull_output();
+    let mut led1_pin = pins
+        .led1
+        .into_push_pull_output_in_state(embedded_hal::digital::v2::PinState::High);
+
+    let mut pmod0_pin1 = pins.gpio2.into_push_pull_output();
+    let mut pmod0_pin2 = pins.gpio3.into_push_pull_output();
+
+    let mut count = 0u32;
 
     loop {
-        info!("on!");
-        led_pin.set_high().unwrap();
-        delay.delay_ms(500);
-        info!("off!");
-        led_pin.set_low().unwrap();
-        delay.delay_ms(500);
+        count += 1;
+        if count == 50_000 {
+            count = 0;
+            led0_pin.toggle().unwrap();
+            led1_pin.toggle().unwrap();
+        }
+
+        pmod0_pin1.set_high().unwrap();
+        pmod0_pin2.set_low().unwrap();
+        delay.delay_us(1);
+        pmod0_pin1.set_low().unwrap();
+        pmod0_pin2.set_high().unwrap();
+        delay.delay_us(1);
+        // info!("on!");
+        // led0_pin.set_high().unwrap();
+        // led1_pin.set_low().unwrap();
+        // delay.delay_ms(500);
+        // info!("off!");
+        // led0_pin.set_low().unwrap();
+        // led1_pin.set_high().unwrap();
+        // delay.delay_ms(500);
     }
 }
 

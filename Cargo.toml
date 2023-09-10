@@ -16,7 +16,13 @@ defmt-rtt = "0.4"
 panic-probe = { version = "0.3", features = ["print-defmt"] }
 
 # We're using a Pico by default on this template
-rp-pico = "0.7"
+# rp-pico = "0.7"
+hatlet_0-1-0 = { git = "https://github.com/chiplet/rp-hal-boards", branch = "hatlet-0.1.0" }
+ssd1331 = "0.3.0"
+embedded-graphics = "0.7.1"
+tinybmp = "0.3.1"
+fugit = "0.3.7"
+libm = "0.2.7"
 
 # but you can use any BSP. Uncomment this to use the pro_micro_rp2040 BSP instead
 # sparkfun-pro-micro-rp2040 = "0.6"
